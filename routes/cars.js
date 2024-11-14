@@ -70,26 +70,39 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Search for cars
+// Search for cars by title
 router.get('/search', auth, async (req, res) => {
-  const { keyword } = req.query;
+  const keyword = req.query;
+
+  // Log the incoming keyword for debugging purposes
+  console.log('Received keyword:', keyword);
+
+  // Validate keyword
+  if (!keyword || keyword.trim() === '') {
+    console.log('Invalid search keyword received:', keyword);
+    return res.status(400).json({ message: 'Invalid search keyword. Please enter a valid keyword.' });
+  }
+
   try {
+    // Find cars by title using case-insensitive search
     const cars = await Car.find({
       userId: req.user._id,
-      $or: [
-        { title: { $regex: keyword, $options: 'i' } },
-        { description: { $regex: keyword, $options: 'i' } },
-        { tags: { $regex: keyword, $options: 'i' } },
-      ],
+      title: keyword.trim(),
     });
+
     cars.forEach(car => {
       car.images = car.images.map(imagePath => `${req.protocol}://${req.get('host')}/${imagePath}`);
     });
-    res.send(cars);
+
+    console.log('Cars found:', cars);
+    return res.status(200).json(cars);
   } catch (err) {
-    res.status(500).send('Server error');
+    console.error('Error during car search:', err);
+    return res.status(500).json({ message: 'Server error. Please try again later.' });
   }
 });
+
+
 
 // Update car
 router.put('/:id', auth, upload.array('images', 10), async (req, res) => {
