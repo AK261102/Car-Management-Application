@@ -1,62 +1,59 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function SignupLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isSignup, setIsSignup] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSignup = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const res = await axios.post(
-        'http://localhost:5001/api/users/signup', 
-        { username, password },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      const endpoint = isSignup ? 'signup' : 'login';
+      const res = await axios.post(`http://localhost:5001/api/users/${endpoint}`, { username, password });
       localStorage.setItem('token', res.data.token);
-      setUsername('');
-      setPassword('');
-      window.location = '/cars';
+      navigate('/cars');
     } catch (err) {
-      console.error("Error during Signup:", err.response ? err.response.data : err.message);
+      console.error('Error during authentication:', err);
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post(
-        'http://localhost:5001/api/users/login', 
-        { username, password },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      localStorage.setItem('token', res.data.token);
-      setUsername('');
-      setPassword('');
-      window.location = '/cars';
-    } catch (err) {
-      console.error("Error during Login:", err.response ? err.response.data : err.message);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-8 shadow-lg rounded-lg bg-white border">
-      <h2 className="text-3xl font-bold text-center mb-6">Sign Up / Login</h2>
-      <input
-        type='text'
-        placeholder='Username'
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="w-full mb-4 p-3 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <input
-        type='password'
-        placeholder='Password'
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full mb-4 p-3 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <div className="flex justify-between">
-        <button onClick={handleSignup} className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition">Sign Up</button>
-        <button onClick={handleLogin} className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition">Login</button>
+    <div className="max-w-md mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
+      <h2 className="text-3xl font-bold mb-6 text-center">{isSignup ? 'Sign Up' : 'Log In'}</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type='text'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+          className="w-full p-3 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <input
+          type='password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          className="w-full p-3 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <button type="submit" className="w-full bg-blue-600 text-white px-5 py-3 rounded hover:bg-blue-700 transition">
+          {isSignup ? 'Sign Up' : 'Log In'}
+        </button>
+      </form>
+      <div className="flex justify-between items-center mt-6">
+        <button onClick={() => setIsSignup(!isSignup)} className="text-blue-600 hover:underline">
+          {isSignup ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
+        </button>
+        <button onClick={handleLogout} className="text-red-600 hover:underline">
+          Log Out
+        </button>
       </div>
     </div>
   );

@@ -110,6 +110,21 @@ function ProductDetail() {
           <h3 className="text-2xl font-bold mb-3">{car.title}</h3>
           <p className="mb-3">{car.description}</p>
           <p className="text-gray-600 mb-4">Tags: {car.tags.join(', ')}</p>
+          {car.images && car.images.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-xl font-bold mb-2">Images</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {car.images.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image} // Use the full URL for the image
+                    alt={`Car ${index + 1}`}
+                    className="w-full h-48 object-cover rounded"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           <button onClick={() => setEditMode(true)} className="bg-yellow-500 text-white px-5 py-3 rounded hover:bg-yellow-600 transition mr-3">Edit</button>
           <button onClick={handleDelete} className="bg-red-600 text-white px-5 py-3 rounded hover:bg-red-700 transition">Delete</button>
         </>
