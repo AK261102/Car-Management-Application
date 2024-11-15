@@ -28,16 +28,16 @@ const corsOptions = {
   origin: [
     'https://frontend-cap-deploy-q58m.vercel.app',
     'https://frontend-cap-deploy-git-37609a-ashish-kumars-projects-51868c6a.vercel.app',
-    'https://frontend-cap-deploy-q58m-l5nzkuzv0.vercel.app',
-    'http://localhost:3000'  // For local testing
+    'https://frontend-cap-deploy-q58m-lytgcf1jp.vercel.app',
+    'http://localhost:3000' // For local testing
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle preflight requests
+
 
 // JSON Parsing Middleware
 app.use(express.json());
