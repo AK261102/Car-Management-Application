@@ -25,7 +25,7 @@ app.use(morgan('dev'));
 
 // CORS Configuration
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow your frontend URL
+  origin: ['http://localhost:3000', 'https://frontend-cap-deploy-q58m.vercel.app'], // Allow both local and Vercel URLs
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
