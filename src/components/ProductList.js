@@ -25,18 +25,50 @@ function ProductList() {
   }, []);
 
   const handleSearch = async () => {
+    const trimmedKeyword = keyword;
+  
+    if (!trimmedKeyword) {
+      alert('Please enter a valid keyword for search.');
+      return;
+    }
+  
     try {
       const token = `Bearer ${localStorage.getItem('token')}`;
-      const res = await axios.get(`http://localhost:5001/api/cars/search?keyword=${keyword}`, {
+      console.log('Searching with keyword:', trimmedKeyword); // Log the keyword for debugging
+  
+      // Make the API request to the backend
+      const res = await axios.get(`http://localhost:5001/api/cars/search?trimmedKeyword}`, {
         headers: {
           Authorization: token,
         },
       });
-      setCars(res.data);
+  
+      // Check and handle the response
+      if (res.status === 200) {
+        if (res.data.length === 0) {
+          alert('No cars found matching the search keyword.');
+        } else {
+          setCars(res.data);
+        }
+      }
     } catch (err) {
       console.error('Error searching cars:', err);
+  
+      if (err.response) {
+        if (err.response.status === 400) {
+          alert(err.response.data.message || 'Invalid search keyword. Please try again.');
+        } else if (err.response.status === 404) {
+          alert('No cars found matching the search keyword.');
+        } else {
+          alert('An error occurred while searching. Please try again.');
+        }
+      } else {
+        alert('Unable to search at the moment. Please try again later.');
+      }
     }
   };
+  
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');
